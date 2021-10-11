@@ -1,4 +1,4 @@
-FROM node:16.10.0-alpine
+FROM node:16.10.0-alpine as build
 
 WORKDIR /app
 
@@ -8,10 +8,10 @@ COPY yarn.lock ./
 
 RUN yarn install --frozen-lockfile
 
-COPY . .
+COPY . ./
 
-EXPOSE 3000
+RUN yarn build
 
-CMD ["yarn", "start"]
+FROM nginx:stable-alpine 
 
-
+COPY --from=build /app/build /usr/share/nginx/html
